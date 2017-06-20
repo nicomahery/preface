@@ -10,8 +10,11 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import fr.miage.restfull.entities.Address;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SuppressWarnings("serial")
 @Entity
 public class User implements Serializable{
@@ -36,9 +39,11 @@ public class User implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Address address;
+	
+	public User() {
+		super();
+	}
 
-	
-	
 	public long getId() {
 		return id;
 	}
