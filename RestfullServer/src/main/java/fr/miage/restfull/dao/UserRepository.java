@@ -9,6 +9,6 @@ import fr.miage.restfull.entities.Address;
 import fr.miage.restfull.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
-	User findByUsername(String username);
+	Optional<User> findByUsername(String username);
 	Collection<Address> findAddressByUsername(String username);
 }
