@@ -58,11 +58,43 @@ public class UserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<User> CreateUser(@RequestBody User user){
+	public ResponseEntity<User> createUser(@RequestBody User user){
 		Address add = this.validateOrSaveAddress(user.getAddress());
 		user.setAddress(add);
 		User u = this.userRepository.save(user);
 		return new ResponseEntity<User>(u, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value="/{username}")
+	public ResponseEntity<String> deleteUser(@PathVariable String username){
+		try {
+			this.validateUsername(username);
+			this.userRepository.delete(this.userRepository.findByUsername(username).get());
+			return new ResponseEntity<String>("Deletion complete" , HttpStatus.ACCEPTED);
+		}
+		catch (UserNotFoundException e){
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("Error message", e.getMessage());
+			return new ResponseEntity<String>("Deletion aborded", responseHeaders, HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value="/{username}")
+	public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable String username){
+		try {
+			this.validateUsername(username);
+			User u = this.userRepository.findByUsername(username).get();
+			user.setId(u.getId());
+			Address add = user.getAddress();
+			user.setAddress(this.validateOrSaveAddress(add));
+			this.userRepository.save(user);
+			return new ResponseEntity<User>(user, HttpStatus.OK);
+		}
+		catch (UserNotFoundException e){
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("Error message", e.getMessage());
+			return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	private void validateUsername(String username){

@@ -38,7 +38,7 @@ public class User implements Serializable{
 	
 	private String homePhoneNumber;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Address address;
 	
 	public User() {

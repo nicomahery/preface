@@ -32,4 +32,5 @@ public class AddressController {
 	public ResponseEntity<Address> createAddress(@RequestBody Address address) {
 		return new ResponseEntity<Address>(addressRepository.save(address), HttpStatus.OK);
 	}
+	
 }
