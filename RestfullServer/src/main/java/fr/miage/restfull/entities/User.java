@@ -2,6 +2,7 @@ package fr.miage.restfull.entities;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ public class User implements Serializable{
 	
 	@Id @GeneratedValue
 	private long id;
-	@NotNull
+	@NotNull @Column(unique = true)
 	private String username;
 	@NotNull
 	@Size(min=5, max=15)
@@ -30,9 +31,9 @@ public class User implements Serializable{
 	private String firstName;
 	@NotNull
 	private String lastName;
-	@NotNull
+	@NotNull @Column(unique = true)
 	private String mailAddress;
-	@NotNull
+	@NotNull @Column(unique = true)
 	private String mobilePhoneNumber;
 	
 	private String homePhoneNumber;

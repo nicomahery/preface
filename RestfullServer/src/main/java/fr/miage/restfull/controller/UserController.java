@@ -1,13 +1,11 @@
 package fr.miage.restfull.controller;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +17,7 @@ import fr.miage.restfull.entities.User;
 import fr.miage.restfull.exception.UserNotFoundException;
 
 @RestController
-@RequestMapping("/user/{username}")
+@RequestMapping("/user")
 public class UserController {
 	
 	private final UserRepository userRepository;
@@ -31,7 +29,7 @@ public class UserController {
 		this.addressRepository = addressRepository;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET, value="/{username}")
 	public ResponseEntity<User> getUser(@PathVariable String username){
 		try {
 		this.validateUsername(username);
@@ -44,17 +42,24 @@ public class UserController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value="/address")
-	public ResponseEntity<Collection<Address>> getUserAddress(@PathVariable String username){
+	@RequestMapping(method = RequestMethod.GET, value="/{username}/address")
+	public ResponseEntity<Address> getUserAddress(@PathVariable String username){
 		try {
 			this.validateUsername(username);
-			return new ResponseEntity<Collection<Address>>(this.userRepository.findAddressByUsername(username), HttpStatus.OK);
+			return new ResponseEntity<Address>(this.addressRepository.findOne(this.userRepository.findByUsername(username).get().getAddress().getId()), HttpStatus.OK);
 		}
 		catch (UserNotFoundException e){
 			HttpHeaders responseHeaders = new HttpHeaders();
 			responseHeaders.set("Error message", e.getMessage());
-			return new ResponseEntity<Collection<Address>>(null, responseHeaders, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Address>(null, responseHeaders, HttpStatus.NOT_FOUND);
 		}
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<User> CreateUser(@RequestBody User user){
+		this.addressRepository.save(user.getAddress());
+		User u = this.userRepository.save(user);
+		return new ResponseEntity<User>(u, HttpStatus.CREATED);
 	}
 	
 	private void validateUsername(String username){

@@ -30,6 +30,8 @@ public class AddressController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Address> createAddress(@RequestBody Address address) {
+		Address add = address;
+		
 		return new ResponseEntity<Address>(addressRepository.save(address), HttpStatus.OK);
 	}
 	
