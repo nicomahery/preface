@@ -1,5 +1,7 @@
 package fr.miage.restfull.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +32,6 @@ public class AddressController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Address> createAddress(@RequestBody Address address) {
-		Address add = address;
-		
 		return new ResponseEntity<Address>(addressRepository.save(address), HttpStatus.OK);
 	}
-	
 }

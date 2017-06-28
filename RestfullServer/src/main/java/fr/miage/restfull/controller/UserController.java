@@ -1,5 +1,7 @@
 package fr.miage.restfull.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,7 +59,7 @@ public class UserController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<User> CreateUser(@RequestBody User user){
-		this.addressRepository.save(user.getAddress());
+		Address add = this.validateOrSaveAddress(user.getAddress());
 		User u = this.userRepository.save(user);
 		return new ResponseEntity<User>(u, HttpStatus.CREATED);
 	}
@@ -65,5 +67,15 @@ public class UserController {
 	private void validateUsername(String username){
 		this.userRepository.findByUsername(username).orElseThrow(()
 				-> new UserNotFoundException(username));
+	}
+	
+	private Address validateOrSaveAddress(Address address){
+		Address add = address;
+		Optional<Address> result = this.addressRepository.findByStateAndStreetAndCityAndCountryAndZip(add.getState(), add.getStreet(), add.getCity(), add.getCountry(), add.getZip());
+		if (!result.isPresent())
+			add = this.addressRepository.save(address);
+		else
+			add = result.get();
+		return add;
 	}
 }
