@@ -60,6 +60,7 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<User> CreateUser(@RequestBody User user){
 		Address add = this.validateOrSaveAddress(user.getAddress());
+		user.setAddress(add);
 		User u = this.userRepository.save(user);
 		return new ResponseEntity<User>(u, HttpStatus.CREATED);
 	}
