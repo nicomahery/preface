@@ -16,7 +16,9 @@ import fr.miage.restfull.dao.AddressRepository;
 import fr.miage.restfull.dao.UserRepository;
 import fr.miage.restfull.entities.Address;
 import fr.miage.restfull.entities.User;
+import fr.miage.restfull.utilities.AuthObj;
 import fr.miage.restfull.exception.UserNotFoundException;
+import fr.miage.restfull.exception.UserPasswordIncorrectException;
 
 @RestController
 @RequestMapping("/user")
@@ -97,6 +99,28 @@ public class UserController {
 		}
 	}
 	
+	
+	@RequestMapping(method = RequestMethod.POST, value="/connect")
+	public ResponseEntity<User> connectUser(@RequestBody AuthObj authObj){
+		try {
+			this.validateUsername(authObj.getUsername());
+			User u = this.userRepository.findByUsername(authObj.getUsername()).get();
+			this.validatePassword(u, authObj);
+				return new ResponseEntity<User>(u, HttpStatus.OK);
+				
+		}
+		catch (UserNotFoundException e) {
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("Error message", e.getMessage());
+			return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
+		}
+		catch (UserPasswordIncorrectException e) {
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("Error message", e.getMessage());
+			return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
+		}
+	}
+	
 	private void validateUsername(String username){
 		this.userRepository.findByUsername(username).orElseThrow(()
 				-> new UserNotFoundException(username));
@@ -110,5 +134,11 @@ public class UserController {
 		else
 			add = result.get();
 		return add;
+	}
+	
+	public void validatePassword(User u, AuthObj auth){
+		if (! u.getPassword().equals(auth.getPassword())){
+			throw new UserPasswordIncorrectException();
+		}
 	}
 }
