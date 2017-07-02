@@ -1,4 +1,4 @@
-package fr.mahery.preface;.controller;
+package fr.mahery.preface.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
